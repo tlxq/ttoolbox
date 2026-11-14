@@ -1,0 +1,13 @@
+{
+  "name": "workflow",
+  "description": "Start, ship, review, verify and hand over work; a rule book for visible text; design pitches; a findings register.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Tom Larsson"
+  },
+  "homepage": "https://github.com/tlxq/ttoolbox",
+  "repository": "https://github.com/tlxq/ttoolbox",
+  "license": "MIT",
+  "icon": "./assets/icon.png",
+  "keywords": ["workflow", "code-review", "verification", "ux-writing", "git"]
+}

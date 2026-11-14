@@ -1,0 +1,16 @@
+{
+  "name": "ttoolbox",
+  "owner": {
+    "name": "Tom Larsson"
+  },
+  "metadata": {
+    "description": "Tom Larsson's Claude Code workflow plugin: skills and agents for planning, building, reviewing and proving work."
+  },
+  "plugins": [
+    {
+      "name": "workflow",
+      "source": "./plugins/workflow",
+      "description": "Start, ship, review, verify and hand over work; a rule book for visible text; design pitches; a findings register."
+    }
+  ]
+}

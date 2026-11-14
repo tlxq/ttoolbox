@@ -1,0 +1,19 @@
+# `mise run check` is the whole check; the pre-push hook runs it.
+[tools]
+bats = "1.14.0"
+gitleaks = "8.30.1"
+lefthook = "2.2.2"
+shellcheck = "0.11.0"
+
+[tasks.check]
+description = "Everything pre-push runs: shell lint, tests, plugin manifests"
+run = [
+  "shellcheck -S warning tools/public-guard",
+  "python3 -I -m py_compile plugins/workflow/skills/handover/waits.py",
+  "bats tests/",
+  "if command -v claude >/dev/null; then claude plugin validate . && claude plugin validate plugins/workflow; else echo 'claude not found: plugin manifests not validated' >&2; fi",
+]
+
+[tasks.format]
+description = "Nothing to format yet"
+run = "true"

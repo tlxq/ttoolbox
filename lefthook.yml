@@ -1,0 +1,18 @@
+# Same hooks as Tom's repo kit. There is no GitHub CI: these hooks are the checks.
+pre-commit:
+  parallel: true
+  jobs:
+    - name: secrets
+      run: gitleaks git --pre-commit --staged --redact --no-banner
+    - name: public
+      run: tools/public-guard staged
+
+commit-msg:
+  jobs:
+    - name: public
+      run: tools/public-guard msg {1}
+
+pre-push:
+  jobs:
+    - name: check
+      run: mise run check
