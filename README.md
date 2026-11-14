@@ -8,7 +8,9 @@ want Claude to work the same careful way every time.
 No live site: it's a plugin. Checks run on my own machine (`mise run check`, also the pre-push hook);
 there is no CI.
 
-<!-- Screenshot or short clip: a real verifier report in the terminal (to add, see docs/assets/) -->
+<p align="center"><img src="docs/assets/verifier-report.png" alt="A verifier report in the terminal: VERDICT: PASS, four checks on the live site marked pass, and one line saying what was not tested." width="100%"></p>
+
+<sub>A real verifier report from my own work (the findings in short), shown as terminal text.</sub>
 
 ## What's in it
 
