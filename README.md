@@ -1,6 +1,4 @@
-<!-- Banner: docs/assets/banner-light.svg and banner-dark.svg, from the kit template (to add) -->
-
-# ttoolbox
+<p align="center"><img src="docs/assets/banner.png" alt="ttoolbox" width="100%"></p>
 
 The Claude Code plugin I use every day to plan, build, review and prove my work, for developers who
 want Claude to work the same careful way every time.
@@ -54,7 +52,7 @@ means, every finding has a home, every change gets a review, and nothing is call
 separate agent has checked it on the real thing.
 
 This is the public part of my own toolbox. The other plugins depend on my private setup (my home
-server, my CV) and stay private. The CLI that keeps my two PCs in step will get its own repo.
+server, my CV) and stay private. The CLI that keeps my two PCs in step has its own repo: [dot](https://github.com/tlxq/dot).
 
 ## What was hard
 
