@@ -1,4 +1,7 @@
-<p align="center"><img src="docs/assets/banner.png" alt="ttoolbox" width="100%"></p>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/banner-dark.svg">
+  <img alt="ttoolbox: The Claude Code plugin I use every day." src="docs/assets/banner-light.svg" width="100%">
+</picture>
 
 The Claude Code plugin I use every day to plan, build, review and prove my work, for developers who
 want Claude to work the same careful way every time.
