@@ -1,16 +1,20 @@
 #!/usr/bin/env bash
 # Repo kit (~/.1dot/kit, copied by `dot kit`; change it there). Keeps a repo safe to make public at any time:
-# no private words, no AI attribution, no stray or tagged images, no private author or committer.
+# no private words, no AI attribution, no stray or tagged images, no private author or committer,
+# and in a public repo no links to private claude.ai pages.
 #   public-guard staged            pre-commit: staged lines, file names, new images, author and committer
 #   public-guard msg <file>        commit-msg: the message, author and committer (sees git commit --author)
 #   public-guard range <base>      CI: every commit after <base>, plus PR_TITLE and PR_BODY from the environment
 # Words come from $NEVER_PUBLIC_WORDS (CI secret) or $NEVER_PUBLIC_FILE (default ~/.1dot/kit/never-public.txt):
 # one per line, whole word, any case. Without a list only the word check is skipped; the other checks still run.
 # A public repo has a committed .public-repo file holding the one email allowed as author and committer.
+# Lines "allow <word>" in it let that list word through in this repo only (a name the repo is public about);
+# the line numbers of the other words stay the same.
 set -euo pipefail
 export LC_ALL=C.UTF-8
 
 AI_RE='Co-Authored-By:.*(Claude|Anthropic)|Claude-Session:|claude\.ai/code/session|Generated with \[?Claude'
+LINK_RE='claude\.ai/(artifact|chat|project)/'
 IMG_RE='\.(png|jpe?g|webp|gif|heic|avif|tiff?)$'
 IMG_OK_RE='(^|/)(assets|public)/'
 TAG_RE='$GPSLatitude or $GPSPosition or $Make or $Model or $SerialNumber or $DateTimeOriginal or $OwnerName or $Artist'
@@ -35,6 +39,18 @@ load_words() {
   else say "the word list $file can't be read"; exit 2
   fi | sed 's/\r$//; s/^[[:space:]]*//; s/[[:space:]]*$//' | grep -vE '^(#|$)' >"$tmp/words" || true
   [ -s "$tmp/words" ] || { say "the word list is empty"; exit 2; }
+  allow_words
+}
+
+# words this repo's .public-repo allows ("allow <word>", any case) become an empty line, so numbering holds
+allow_words() {
+  local top
+  top=$(git rev-parse --show-toplevel 2>/dev/null) || return 0
+  [ -e "$top/.public-repo" ] || return 0
+  sed 's/\r$//' "$top/.public-repo" | sed -nE 's/^[[:space:]]*allow[[:space:]]+(.*[^[:space:]])[[:space:]]*$/\1/Ip' >"$tmp/allow"
+  [ -s "$tmp/allow" ] || return 0
+  awk 'NR==FNR{a[tolower($0)]=1;next} {print (tolower($0) in a) ? "" : $0}' "$tmp/allow" "$tmp/words" >"$tmp/words2"
+  mv "$tmp/words2" "$tmp/words"
 }
 
 check_words() {
@@ -42,6 +58,7 @@ check_words() {
   [ "$skip_words" = 0 ] || return 0
   while IFS= read -r w; do
     n=$((n + 1))
+    [ -n "$w" ] || continue
     if grep -aiwF -- "$w" "$tmp/text" >"$tmp/hits"; then
       while IFS= read -r line; do
         if [ -n "${NEVER_PUBLIC_WORDS:-}" ]; then bad "$where: list word $n in: ${line%%$'\t'*}"
@@ -56,7 +73,7 @@ load_public() {
   local top
   top=$(git rev-parse --show-toplevel 2>/dev/null) || return 0
   [ -e "$top/.public-repo" ] || return 0
-  public_email=$(sed 's/\r$//; s/^[[:space:]]*//; s/[[:space:]]*$//' "$top/.public-repo" | grep -vE '^(#|$)' | head -n1) || true
+  public_email=$(sed 's/\r$//; s/^[[:space:]]*//; s/[[:space:]]*$//' "$top/.public-repo" | grep -viE '^(#|$|allow[[:space:]])' | head -n1) || true
   [ -n "$public_email" ] || { say ".public-repo has no email in it"; exit 2; }
 }
 
@@ -68,6 +85,7 @@ check_ident() {
   if [ "$skip_words" = 0 ]; then
     while IFS= read -r w; do
       n=$((n + 1))
+      [ -n "$w" ] || continue
       printf '%s\n' "$ident" | grep -qaiwF -- "$w" && bad "$who: the name or email is list word $n; use a public one: git config user.email <address>"
     done <"$tmp/words"
   fi
@@ -90,6 +108,11 @@ check_ai() {
   local where="$1"
   if grep -aiE -- "$AI_RE" "$tmp/text" >"$tmp/hits"; then
     while IFS= read -r line; do bad "$where: AI attribution in ${line%%$'\t'*}"; done <"$tmp/hits"
+  fi
+  # a public repo also keeps out links to private claude.ai pages (pitches, chats)
+  load_public
+  if [ -n "$public_email" ] && grep -aiE -- "$LINK_RE" "$tmp/text" >"$tmp/hits"; then
+    while IFS= read -r line; do bad "$where: private claude.ai link in ${line%%$'\t'*}"; done <"$tmp/hits"
   fi
 }
 
