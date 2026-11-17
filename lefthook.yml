@@ -16,3 +16,5 @@ pre-push:
   jobs:
     - name: check
       run: mise run check
+      skip:
+        - run: test -f .public-repo
