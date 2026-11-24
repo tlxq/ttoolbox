@@ -15,7 +15,7 @@ runs it on every PR before merge.
 
 ## What's in it
 
-One plugin, `workflow`: 9 skills and 4 agents.
+One plugin, `workflow`: 10 skills and 4 agents.
 
 | Skill | What it does |
 |---|---|
@@ -25,6 +25,7 @@ One plugin, `workflow`: 9 skills and 4 agents.
 | `design-pitch` | Walk the whole flow, ask taste questions as a picker, show a rendered pitch, and only then build. |
 | `find-issues` | A read-only hunt for what's wrong, with evidence, grouped by cause, one long-term fix per group. |
 | `findings-register` | Everything found along the way goes in one table in the plan; urgent items get fixed now. |
+| `finding-to-check` | Every fixed bug also gets the test or lint rule that would have caught it, proven to fail without the fix. |
 | `picture-check` | Before a PR that changes screens: pictures of every screen, before and after, side by side. |
 | `commit-proposal` | A commit message from the staged diff, in the repo's own style. |
 | `handover` | Ends a session: plan updated, nothing uncommitted, one `Next:` line, and how long you waited on Claude this week. |
@@ -79,6 +80,7 @@ flowchart LR
   signum -. rules for visible text .-> reviewer
   pitch[design-pitch] -. held to .-> signum
   find[find-issues] --> register[findings-register]
+  register --> check[finding-to-check]
   verifier -. findings .-> register
 ```
 
