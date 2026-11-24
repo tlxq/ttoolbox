@@ -6,8 +6,8 @@
 The Claude Code plugin I use every day to plan, build, review and prove my work, for developers who
 want Claude to work the same careful way every time.
 
-No live site: it's a plugin. Checks run on my own machine (`mise run check`, also the pre-push hook);
-there is no CI.
+No live site: it's a plugin. `mise run check` is the whole check: the pre-push hook runs it, and GitHub
+runs it on every PR before merge.
 
 <p align="center"><img src="docs/assets/verifier-report.png" alt="A verifier report in the terminal: VERDICT: PASS, four checks on the live site marked pass, and one line saying what was not tested." width="100%"></p>
 
